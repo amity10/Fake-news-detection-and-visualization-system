@@ -1,0 +1,36 @@
+// Wait until page fully loads
+document.addEventListener("DOMContentLoaded", function () {
+    // Fade-in animation for the form card
+    document.querySelectorAll(".card").forEach(card => {
+        card.style.opacity = "0";
+        setTimeout(() => {
+            card.style.transition = "opacity 0.5s ease-in-out";
+            card.style.opacity = "1";
+        }, 100);
+    });
+
+    // Password toggle (if password fields exist)
+    document.querySelectorAll("input[type='password']").forEach(input => {
+        let toggle = document.createElement("span");
+        toggle.innerHTML = "👁";
+        toggle.style.cursor = "pointer";
+        toggle.style.marginLeft = "10px";
+        toggle.addEventListener("click", () => {
+            input.type = input.type === "password" ? "text" : "password";
+        });
+        input.parentNode.appendChild(toggle);
+    });
+
+    // Form validation for register page
+    const registerForm = document.querySelector("form[action*='register']");
+    if (registerForm) {
+        registerForm.addEventListener("submit", function (e) {
+            const password1 = document.querySelector("input[name='password1']").value;
+            const password2 = document.querySelector("input[name='password2']").value;
+            if (password1 !== password2) {
+                alert("Passwords do not match!");
+                e.preventDefault();
+            }
+        });
+    }
+});

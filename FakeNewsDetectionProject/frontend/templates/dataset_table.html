@@ -1,0 +1,68 @@
+<div id="dataset-section">
+    <div class="table-container mt-3" style="max-height:400px; overflow-y:auto;">
+        <table class="table table-bordered table-hover text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Serial No.</th>
+                    <th>Title</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in page_obj %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.title }}</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-success"
+                            onclick="pasteNews(`{{ item.title|escapejs }}`, `{{ item.text|escapejs }}`)">
+                            Paste
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3">No news available</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        {% if page_number > 1 %}
+            <a href="?page={{ page_number|add:-1 }}&category={{ selected_category }}"
+               class="btn btn-sm text-white" style="background-color:#dc3545;"
+               onclick="loadDataset(event, this.href)">⬅ Previous</a>
+        {% else %}
+            <span class="btn btn-sm text-white disabled" style="background-color:#6c757d;">⬅ Previous</span>
+        {% endif %}
+
+        <span class="fw-bold text-dark">Page {{ page_number }} of {{ total_pages }}</span>
+
+        {% if page_number < total_pages %}
+            <a href="?page={{ page_number|add:1 }}&category={{ selected_category }}"
+               class="btn btn-sm text-white" style="background-color:#28a745;"
+               onclick="loadDataset(event, this.href)">Next ➡</a>
+        {% else %}
+            <span class="btn btn-sm text-white disabled" style="background-color:#6c757d;">Next ➡</span>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function loadDataset(event, url) {
+    event.preventDefault(); // Prevent full page reload
+    fetch(url, {
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        document.getElementById("dataset-section").innerHTML = html;
+    })
+    .catch(err => console.error("Error loading dataset:", err));
+}
+</script>

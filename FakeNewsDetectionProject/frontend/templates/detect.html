@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% block title %}Detect News{% endblock %}
+
+{% block content %}
+<style>
+/* Glassmorphism styles */
+.glass-input {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 10px 12px;
+    color: #fff;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.glass-select {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    color: #fff;
+    padding: 6px 10px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Glass card container */
+.glass-card {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+/* Glass table container */
+.glass-table {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 10px;
+    overflow-x: auto;
+}
+
+/* Table header neon glow */
+.glass-table table thead {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #00f9ff;
+    text-shadow: 0 0 5px #00f9ff, 0 0 10px #00f9ff;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Table rows glass style */
+.glass-table table tbody tr {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover effect on rows */
+.glass-table table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px #00f9ff inset;
+}
+
+/* Table cells glass style */
+.glass-table table th,
+.glass-table table td {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Neon glow for card title */
+.glow-title {
+    color: #00f9ff;
+    text-shadow: 0 0 5px #00f9ff, 0 0 10px #00f9ff, 0 0 20px #00f9ff;
+}
+
+/* Scrollbar styling */
+.glass-table::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.glass-table::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.glass-table::-webkit-scrollbar-thumb {
+    background: rgba(0, 249, 255, 0.3);
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-table::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 249, 255, 0.6);
+}
+</style>
+
+<div class="glass-card">
+    <h1 class="glow-title">📰 Fake News Detection</h1>
+
+    <!-- News Input Form -->
+    <form id="detectForm">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="news_input" class="form-label">Paste Your News Content from the given dataset</label>
+            <textarea id="news_input" name="news" rows="5" class="form-control glass-input"
+                placeholder="Enter news text here..." required></textarea>
+        </div>
+        <input type="hidden" id="fullNewsHidden" name="full_news_text" value="">
+        <input type="hidden" name="selected_category" id="selected_category" value="{{ selected_category }}">
+        <div class="d-grid" style="width:150px;">
+            <button type="submit" class="btn btn-primary btn-sm">Check</button>
+        </div>
+    </form>
+
+    <!-- Result Display -->
+    <div id="resultBox" class="mt-3 p-3 glass-table" style="display:none;">
+        <p id="resultText"></p>
+    </div>
+
+    <hr>
+
+    <!-- Category Filter Dropdown -->
+    <form method="get" class="mb-3">
+        <label for="category"><b>Select Category:</b></label>
+        <select name="category" id="category" onchange="this.form.submit()" class="form-control w-50 d-inline-block glass-select">
+            <option value="All">All</option>
+            {% for cat in categories %}
+                <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <!-- Dataset Table Section -->
+    <div id="dataset-container" class="glass-table">
+        {% include "dataset_table.html" %}
+    </div>
+</div>
+
+<script>
+function pasteNews(title, fullText) {
+    const textarea = document.getElementById("news_input");
+    textarea.value = title + "\n\n" + fullText;
+    document.getElementById("fullNewsHidden").value = fullText;
+    textarea.scrollIntoView({ behavior: 'smooth' });
+}
+
+// AJAX submit for news detection
+document.getElementById("detectForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    fetch("{% url 'detect' %}", {
+        method: "POST",
+        headers: { "X-Requested-With": "XMLHttpRequest" },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        const box = document.getElementById("resultBox");
+        const text = document.getElementById("resultText");
+        if (data.error) {
+            box.style.display = "block";
+            box.style.background = "rgba(255,0,0,0.2)";
+            text.innerHTML = data.error;
+        } else {
+            box.style.display = "block";
+            box.style.background = "rgba(0,255,0,0.2)";
+            let emailMsg = data.email_sent ? `<br>Email alert sent to ${data.email_to}` : "";
+            text.innerHTML = `${data.prediction} <br>Confidence: ${data.confidence}% ${emailMsg}`;
+        }
+    })
+    .catch(err => console.log(err));
+});
+
+// AJAX load for pagination
+function loadDataset(event, url) {
+    event.preventDefault();
+    fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then(response => response.text())
+        .then(html => { document.getElementById("dataset-container").innerHTML = html; })
+        .catch(err => console.error("Dataset load error:", err));
+}
+</script>
+{% endblock %}

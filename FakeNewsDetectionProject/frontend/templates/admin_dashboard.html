@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="glass-card">
+    <h1 class="glow-title">Admin Dashboard</h1>
+    <p>Manage users, monitor predictions, and view statistics.</p>
+    <canvas id="adminChart" height="120"></canvas>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctxAdmin = document.getElementById('adminChart').getContext('2d');
+    new Chart(ctxAdmin, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+            datasets: [{
+                label: 'Predictions',
+                data: [10, 20, 15, 30, 25],
+                backgroundColor: '#17a2b8'
+            }]
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Modern card styles */
+.modern-card {
+    background: rgba(0, 0, 0, 0.5); /* dark glass */
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 8px 25px rgba(0, 255, 255, 0.3);
+    border: 2px solid rgba(0, 255, 255, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    height: 100%;
+}
+.modern-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 15px 35px rgba(0, 255, 255, 0.7);
+    border-color: #00ffff;
+}
+.modern-card .feature-icon {
+    font-size: 3rem;
+    color: #00ffff;
+    margin-bottom: 1rem;
+}
+.modern-card h5, .modern-card h6 {
+    color: #fff;
+}
+.modern-card p {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Optional: glow text for headings */
+.glow-text {
+    text-shadow: 0 0 8px rgba(0,255,255,0.5), 0 0 20px rgba(47, 193, 193, 0.87);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section (normal) -->
+<section class="section-glass text-center section-gradient py-5">
+    <h1 class="display-4 text-glow">Fake News Detection System</h1>
+    <p class="lead text-secondary">
+        Identify misinformation quickly and reliably using advanced ML-powered analysis.
+    </p>
+    <a href="{% url 'detect' %}" class="btn btn-lg btn-primary mt-3">Start Detecting</a>
+</section>
+
+<!-- Why Choose Our System -->
+<div class="glass-container py-5 mb-5">
+    <h2 class="text-center mb-5 glow-text">Why Choose Our System</h2>
+    <div class="row text-center">
+        <div class="col-md-4 mb-4">
+            <div class="modern-card">
+                
+                <h5>1.Reliable & Accurate</h5>
+                <p>Our ML-driven algorithms provide high-precision news verification, ensuring trustworthy results every time.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="modern-card">
+                
+                <h5>2.Efficient & Fast</h5>
+                <p>Get instant results with optimized processing for seamless user experience.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="modern-card">
+                
+                <h5>3.Secure & Confidential</h5>
+                <p>All user interactions are secure, maintaining privacy while delivering reliable insights.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="glass-container py-5 mb-5">
+    <h2 class="text-center mb-5 glow-text">Features</h2>
+    <div class="row text-center">
+        <div class="col-md-3 mb-4">
+            <div class="modern-card">
+                
+                <h6>1.Real-Time Detection</h6>
+                <p>Analyze news instantly and get accurate FAKE/REAL predictions.</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="modern-card">
+                
+                <h6>2.Alerts & Notifications</h6>
+                <p>Receive email alerts when fake news is detected for quick action.</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="modern-card">
+                
+                <h6>3.Analytics Dashboard</h6>
+                <p>Visualize trends, confidence scores, and language-wise news distribution.</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="modern-card">
+                
+                <h6>4.Authentication</h6>
+                <p>Secure login & verified access for trusted users only.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="glass-container py-5 mb-5">
+    <h2 class="text-center mb-5 glow-text">How It Works</h2>
+    <div class="row text-center">
+        <div class="col-md-3 mb-4">
+            <div class="modern-card">
+                <h5>1. Input News</h5>
+                <p>Enter news text manually or paste from the dataset.</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="modern-card">
+                <h5>2. Detection</h5>
+                <p>System detects and gives accurate analysis.</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="modern-card">
+                <h5>3. ML Analysis</h5>
+                <p>XGBoost + TF-IDF models classify news as FAKE or REAL with high confidence.</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="modern-card">
+                <h5>4. Visualize & Alert</h5>
+                <p>Results are displayed with charts, confidence scores, and optional email alerts.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

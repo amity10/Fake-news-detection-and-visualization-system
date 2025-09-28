@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Fake News Detector{% endblock %}
+
+{% block extra_css %}
+<style>
+    textarea {
+        resize: none;
+        border-radius: 12px;
+        padding: 15px;
+        font-size: 1rem;
+        border: 2px solid transparent;
+        transition: border 0.3s;
+    }
+    textarea:focus {
+        border: 2px solid #ff512f;
+        box-shadow: 0 0 10px rgba(255,81,47,0.6);
+    }
+    .btn-gradient {
+        background: linear-gradient(90deg, #ff512f, #dd2476);
+        color: white;
+        font-size: 1.1rem;
+        padding: 12px;
+        border-radius: 12px;
+        transition: all 0.3s ease-in-out;
+        border: none;
+        box-shadow: 0 4px 15px rgba(221,36,118,0.4);
+    }
+    .btn-gradient:hover {
+        transform: scale(1.05);
+        background: linear-gradient(90deg, #dd2476, #ff512f);
+        box-shadow: 0 6px 20px rgba(255,81,47,0.6);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="glass-card mx-auto" style="max-width: 700px;">
+    <h1 class="glow-title">📰 Fake News Detector</h1>
+
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="{% url 'predict_news' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="newsText" class="form-label">Paste Your News Content:</label>
+            <textarea id="newsText" name="news" rows="6" class="form-control" placeholder="Enter or paste the news text here..." required></textarea>
+        </div>
+        <div class="d-grid">
+            <button type="submit" class="btn-gradient">🔍 Check News</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

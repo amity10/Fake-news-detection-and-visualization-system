@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<style>
+body {
+    background: radial-gradient(circle at top left, #0f2027, #203a43, #2c5364);
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    min-height: 100vh;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0, 255, 200, 0.4);
+    padding: 30px;
+    max-width: 450px;
+    margin: auto;
+    animation: fadeIn 1.2s ease-in-out;
+    text-align: center;
+}
+
+.glass-card h2 {
+    margin-bottom: 20px;
+    color: #00ffc8;
+    text-shadow: 0 0 15px rgba(0,255,200,0.8);
+    font-size: 2rem;
+}
+
+.form-control {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: white;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.form-control:focus {
+    outline: none;
+    box-shadow: 0 0 10px #00ffc8;
+}
+
+.btn-glow {
+    background: linear-gradient(45deg, #00ffc8, #00b4ff);
+    border: none;
+    color: black;
+    font-weight: bold;
+    border-radius: 12px;
+    padding: 10px;
+    width: 100%;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 0 15px #00ffc8;
+}
+
+.btn-glow:hover {
+    box-shadow: 0 0 25px #00ffc8, 0 0 50px #00ffc8;
+    transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.alert-custom {
+    background: rgba(220, 53, 69, 0.8);
+    color: white;
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+</style>
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+    <div class="glass-card">
+        <h2>Register</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert-custom">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+ <form method="POST" action="{% url 'register' %}">
+    {% csrf_token %}
+    <div class="mb-3">
+        <input type="text" name="username" placeholder="Username"
+               class="form-control" required value="{{ request.POST.username|default:'' }}">
+    </div>
+    <div class="mb-3">
+        <input type="email" name="email" placeholder="Email"
+               class="form-control" required value="{{ request.POST.email|default:'' }}">
+    </div>
+    <div class="mb-3">
+        <input type="password" name="password" placeholder="Password" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <input type="password" name="confirm_password" placeholder="Confirm Password" class="form-control" required>
+    </div>
+    <button type="submit" class="btn-glow">Register</button>
+</form>
+
+
+
+
+        <p class="text-center mt-3">
+            Already have an account? <a href="{% url 'login' %}" style="color:#00ffc8;">Login</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

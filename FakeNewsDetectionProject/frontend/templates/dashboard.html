@@ -1,0 +1,380 @@
+{% extends 'base.html' %}
+{% load customtags %}
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<div class="glass-card">
+    <h1 class="glow-title">📊 Analytics Dashboard</h1>
+    <p>Welcome, {{ user.username }}!</p>
+
+    <!-- Grid for charts -->
+    <div class="chart-grid">
+        <!-- Fake vs Real -->
+        <div class="chart-box">
+            <h3>Fake vs Real News Distribution</h3>
+            <canvas id="fakeRealChart"></canvas>
+        </div>
+
+        <!-- Checks Over Time -->
+        <div class="chart-box">
+            <h3>News Checks Over Time (Last 7 Days)</h3>
+            <canvas id="trendChart"></canvas>
+        </div>
+
+        <!-- Language-wise -->
+        <div class="chart-box">
+            <h3>Language-wise Fake vs Real</h3>
+            <canvas id="langChart"></canvas>
+        </div>
+
+        <!-- Confidence Radar -->
+        <div class="chart-box">
+            <h3>Confidence Level Distribution</h3>
+            <canvas id="confidenceRadar"></canvas>
+        </div>
+
+        <!-- Weekly Stacked Bar -->
+        <div class="chart-box">
+            <h3>Weekly Fake vs Real Trend</h3>
+            <canvas id="weeklyStacked"></canvas>
+        </div>
+
+        <!-- Fake News Lifecycle Radar -->
+        <!-- Fake News Lifecycle Combined -->
+<div class="chart-box full-width lifecycle-box">
+    <h3>Fake News Lifecycle</h3>
+    <div class="lifecycle-container">
+        <!-- Radar Chart -->
+        <div class="lifecycle-chart">
+            <canvas id="lifecycleRadar"></canvas>
+        </div>
+
+        <!-- Table -->
+        <div class="lifecycle-table-wrapper">
+            <table class="lifecycle-table">
+                <thead>
+                    <tr>
+                        <th>Stage</th>
+                        <th>Strength (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Creation</td><td>{{ lifecycle_data.Creation }}</td></tr>
+                    <tr><td>Initial Spread</td><td>{{ lifecycle_data.Initial_Spread }}</td></tr>
+                    <tr><td>Peak Reach</td><td>{{ lifecycle_data.Peak_Reach }}</td></tr>
+                    <tr><td>Detection</td><td>{{ lifecycle_data.Detection }}</td></tr>
+                    <tr><td>Correction</td><td>{{ lifecycle_data.Correction }}</td></tr>
+                    <tr><td>Residual Impact</td><td>{{ lifecycle_data.Residual_Impact }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+  
+
+         <!-- Risk Trend -->
+        <div class="chart-box full-width">
+            <h3>Fake News Risk Trend (7 Days)</h3>
+            <canvas id="riskTrend"></canvas>
+        </div>
+
+        <!-- Confidence Spread -->
+        <div class="chart-box full-width">
+            <h3>Prediction Confidence Spread</h3>
+            <canvas id="confidenceSpread"></canvas>
+        </div>
+        
+    </div>
+
+    <!-- Recent Alerts -->
+    <h3>Real-Time Detection Alerts</h3>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Prediction</th>
+                    <th>Confidence</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for check in recent_checks %}
+                <tr>
+                    <td>{{ check.news_title }}</td>
+                    <td>
+                        {% if check.prediction == "FAKE" %}
+                            <span style="color:red;">❌ Fake</span>
+                        {% else %}
+                            <span style="color:green;">✅ Real</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ check.probability|floatformat:2 }}%</td>
+                    <td>{{ check.date_checked|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+  <!-- 📥 Sticky Export Buttons -->
+<div class="fixed bottom-4 left-0 right-0 flex justify-center gap-4 fixed-buttons">
+    <a href="{% url 'export_dashboard_csv' %}" class="btn btn-primary shadow-lg">
+         Download CSV Report
+    </a>
+    <a href="{% url 'export_dashboard_pdf' %}" class="btn btn-danger shadow-lg">
+         Download PDF Report
+    </a>
+</div>
+
+
+</div>
+
+<style>
+    .chart-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+    .chart-box {
+        background: rgba(255,255,255,0.05);
+        padding: 20px;
+        border-radius: 15px;
+        height: 320px;
+    }
+    .chart-box canvas {
+        width: 100% !important;
+        height: 220px !important;
+    }
+    .full-width {
+        grid-column: 1 / -1;
+    }
+    .table-wrapper {
+        max-height: 250px;
+        overflow-y: auto;
+        margin-top: 10px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    .table-wrapper table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .table-wrapper th,
+    .table-wrapper td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .table-wrapper thead th {
+        position: sticky;
+        top: 0;
+        background: rgba(15, 32, 39, 0.95);
+        backdrop-filter: blur(5px);
+        z-index: 2;
+    }
+    .lifecycle-container {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.lifecycle-chart {
+    flex: 1;
+    min-width: 250px;
+}
+
+.lifecycle-table-wrapper {
+    flex: 1;
+}
+
+.lifecycle-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.lifecycle-table th, .lifecycle-table td {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 6px;
+    text-align: left;
+}
+.lifecycle-table th {
+    background: rgba(15, 32, 39, 0.9);
+    color: #fff;
+}
+.lifecycle-table td {
+    color: #ddd;
+}
+
+.fixed-buttons {
+    margin-top: 30px;  /* Adds gap between table and buttons */
+}
+
+</style>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Fake vs Real Chart
+    new Chart(document.getElementById("fakeRealChart"), {
+        type: "doughnut",
+        data: {
+            labels: ["Real News", "Fake News"],
+            datasets: [{
+                data: [{{ real_count }}, {{ fake_count }}],
+                backgroundColor: ["#28a745", "#dc3545"]
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => ctx.raw + " (" + ((ctx.raw/{{ total_checks|default:1 }})*100).toFixed(1) + "%)"
+                    }
+                }
+            }
+        }
+    });
+
+    // Checks Over Time (total)
+    new Chart(document.getElementById("trendChart"), {
+        type: "line",
+        data: {
+            labels: [{% for c in checks_over_time %}"{{ c.day }}",{% endfor %}],
+            datasets: [{
+                label: "Total Checks",
+                data: [{% for c in checks_over_time %}{{ c.fake|add:c.real }},{% endfor %}],
+                borderColor: "#007bff",
+                backgroundColor: "rgba(0,123,255,0.3)",
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: { maintainAspectRatio: false }
+    });
+
+    // Language-wise Fake vs Real
+    new Chart(document.getElementById("langChart"), {
+        type: "bar",
+        data: {
+            labels: ["English", "Hindi", "Marathi"],
+            datasets: [
+                {
+                    label:"Fake",
+                    data:[{{ lang_summary.English.FAKE }}, {{ lang_summary.Hindi.FAKE }}, {{ lang_summary.Marathi.FAKE }}],
+                    backgroundColor:"#dc3545"
+                },
+                {
+                    label:"Real",
+                    data:[{{ lang_summary.English.REAL }}, {{ lang_summary.Hindi.REAL }}, {{ lang_summary.Marathi.REAL }}],
+                    backgroundColor:"#28a745"
+                }
+            ]
+        },
+        options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{position:"top"}}}
+    });
+
+ // Confidence Radar
+    new Chart(document.getElementById("confidenceRadar"), {
+        type: "radar",
+        data: {
+            labels: ["50-60%","60-70%","70-80%","80-90%","90-100%"],
+            datasets: [{
+                label: "Confidence Spread",
+                data: [
+    {{ polar_ranges|get_item:"50-60" }},
+    {{ polar_ranges|get_item:"60-70" }},
+    {{ polar_ranges|get_item:"70-80" }},
+    {{ polar_ranges|get_item:"80-90" }},
+    {{ polar_ranges|get_item:"90-100" }}
+],
+                backgroundColor: "rgba(54,162,235,0.3)",
+                borderColor: "#36a2eb"
+            }]
+        },
+        options: { maintainAspectRatio:false }
+    });
+
+    // Weekly Stacked Bar
+    new Chart(document.getElementById("weeklyStacked"), {
+        type: "bar",
+        data: {
+            labels: [{% for c in checks_over_time %}"{{ c.day }}",{% endfor %}],
+            datasets: [
+                {label:"Fake", data:[{% for c in checks_over_time %}{{ c.fake }},{% endfor %}], backgroundColor:"#dc3545"},
+                {label:"Real", data:[{% for c in checks_over_time %}{{ c.real }},{% endfor %}], backgroundColor:"#28a745"}
+            ]
+        },
+        options: {
+            maintainAspectRatio:false,
+            responsive:true,
+            plugins:{legend:{position:"top"}},
+            scales:{x:{stacked:true}, y:{stacked:true}}
+        }
+    });
+
+    // Fake News Lifecycle Radar
+new Chart(document.getElementById("lifecycleRadar"), {
+    type: "radar",
+    data: {
+        labels: ["Creation", "Initial Spread", "Peak Reach", "Detection", "Correction", "Residual Impact"],
+        datasets: [{
+            label: "Lifecycle Strength (%)",
+            data: [
+                {{ lifecycle_data.Creation }},
+                {{ lifecycle_data.Initial_Spread }},
+                {{ lifecycle_data.Peak_Reach }},
+                {{ lifecycle_data.Detection }},
+                {{ lifecycle_data.Correction }},
+                {{ lifecycle_data.Residual_Impact }}
+            ],
+            backgroundColor: "rgba(255,99,132,0.3)",
+            borderColor: "#ff6384"
+        }]
+    },
+    options: { maintainAspectRatio: false, scales: { r: { suggestedMin: 0, suggestedMax: 100 } } }
+});
+
+    
+
+    // Risk Trend Line Chart
+    new Chart(document.getElementById("riskTrend"), {
+        type: "line",
+        data: {
+            labels: [{% for r in risk_trend %}"{{ r.day }}",{% endfor %}],
+            datasets: [{
+                label: "Risk Index %",
+                data: [{% for r in risk_trend %}{{ r.risk }},{% endfor %}],
+                borderColor: "#dc3545",
+                backgroundColor: "rgba(220,53,69,0.3)",
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: { maintainAspectRatio: false, scales: { y: { max: 100, beginAtZero: true } } }
+    });
+
+    // Confidence Spread (average probability per class)
+    new Chart(document.getElementById("confidenceSpread"), {
+        type: "bar",
+        data: {
+            labels: [{% for c in checks_over_time %}"{{ c.day }}",{% endfor %}],
+datasets: [{
+    label: "Total Checks",
+    data: [{% for c in checks_over_time %}{{ c.total }},{% endfor %}],
+    borderColor: "#007bff",
+    backgroundColor: "rgba(0,123,255,0.3)",
+    fill:true,
+    tension: 0.3
+}]
+
+        },
+        options: { maintainAspectRatio:false }
+    });
+</script>
+{% endblock %}
+{% endblock %}
