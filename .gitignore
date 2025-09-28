@@ -1,11 +1,26 @@
-*.pyc
+# Python
 __pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+env/
+*.env
+
+# Django
+*.sqlite3
 db.sqlite3
-venv/
 *.log
 *.pot
-*.py[cod]
-*.swp
-.DS_Store
-.env
+*.pyc
+media/
 
+# ML / Dataset files
+*.joblib
+*.csv
+*.h5
+*.model
+
+# IDE / OS files
+.vscode/
+.DS_Store
+*.swp
